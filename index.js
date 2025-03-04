@@ -1,3 +1,4 @@
+require('dotenv').config(); // Load environment variables
 const express = require('express');
 const nodemailer = require('nodemailer');
 const cors = require('cors');
@@ -12,12 +13,10 @@ app.use(bodyParser.json());
 
 // Create a transporter using SMTP
 const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com", // Or your email provider's SMTP server
-    port: 587,
-    secure: false, // Use TLS
+    service: 'gmail', // Or your email provider
     auth: {
-        user: process.env.EMAIL_USER, // Your email
-        pass: process.env.EMAIL_PASS  // App password or app-specific password
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
     }
 });
 
@@ -27,8 +26,8 @@ app.post('/send-email', async (req, res) => {
 
     // Email options
     const mailOptions = {
-        from: process.env.EMAIL_USER, // Sender address
-        to: process.env.RECIPIENT_EMAIL, // Recipient address
+        from: process.env.EMAIL_USER,
+        to: process.env.RECIPIENT_EMAIL,
         subject: `New Portfolio Contact: ${subject}`,
         html: `
             <h2>New Message from Portfolio Contact Form</h2>
@@ -48,6 +47,11 @@ app.post('/send-email', async (req, res) => {
         console.error('Email sending error:', error);
         res.status(500).json({ message: 'Failed to send email', error: error.toString() });
     }
+});
+
+// Root route for testing
+app.get('/', (req, res) => {
+    res.send('Portfolio Backend Server is running!');
 });
 
 // Start server
